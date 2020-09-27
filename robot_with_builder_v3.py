@@ -3,21 +3,22 @@ from abc import ABC, abstractmethod
 
 class Robot:
     # instead of passing None, we just change to empty strings and we append the strings later on.
-    def __init__(self, bipedal="", quadripedal= "", wheeled="", flying="", traversal=[], detection_systems=[]):
-        self.bipedal = bipedal
-        self.quadripedal = quadripedal
+    def __init__(self, legs="", wheeled="", flying="", numb="", numbup="", traversal=[], detection_systems=[]):
+        self.legs = legs
+        self.numbUp = numbup
         self.wheeled = wheeled
         self.flying = flying
+        self.numb = numb
         self.traversal = traversal
         self.detection_systems = detection_systems
 
     def __str__(self):  # tried to reduce the number of if statements
         # The reason of 2 if statements actually for displaying purposes.
-        msg = f"{self.bipedal}{self.quadripedal}{self.wheeled}{self.flying} ROBOT. \n"
+        msg = f"{self.numb} {self.legs}{self.wheeled}{self.flying} ROBOT. \n"
         if self.traversal:
             msg += "Traversal modules installed:\n"
         for module in self.traversal:
-            msg += "-" + str(module) + "\n"
+            msg += "-" + self.numbUp + " " + str(module) + "\n"
         if self.detection_systems:
             msg += "Detection systems installed:\n"
         for system in self.detection_systems:
@@ -25,21 +26,14 @@ class Robot:
         return msg
 
 
-# Problem 1: Couldn't figure out how to implement different number of components such as 8 legs instead of 2 or  4
-# We believe this problem is related to __str__ method. We couldn't pass arguments to the method __str__
-class BipedalLegs:
+class Legs:
     def __str__(self):
-        return "TWO LEGS"
-
-
-class QuadripedalLegs:
-    def __str__(self):
-        return "FOUR LEGS"
+        return "LEGS"
 
 
 class Arms:
     def __str__(self):
-        return "TWO ARMS"
+        return "ARMS"
 
 
 class Wings:
@@ -52,14 +46,9 @@ class Blades:
         return "BLADES"
 
 
-class FourWheels:
+class Wheels:
     def __str__(self):
-        return "FOUR WHEELS"
-
-
-class TwoWheels:
-    def __str__(self):
-        return "TWO WHEELS"
+        return "WHEELS"
 
 
 class CameraDetectionSystem:
@@ -96,8 +85,10 @@ class RobotBuilder(ABC):
 # UAV and Spider Robot Builder added.
 class AndroidBuilder(RobotBuilder):
     def build_traversal(self):
-        self.product.bipedal = BipedalLegs()
-        self.product.traversal.append(BipedalLegs())
+        self.product.legs = Legs()
+        self.product.numb = "TWO"
+        self.product.numbUp = "TWO"
+        self.product.traversal.append(Legs())
         self.product.traversal.append(Arms())
 
     def build_detection_system(self):
@@ -106,10 +97,11 @@ class AndroidBuilder(RobotBuilder):
 
 class AutonomousCarBuilder(RobotBuilder):
     def build_traversal(self):
-        self.product.wheeled = FourWheels()
+        self.product.wheeled = Wheels()
+        self.product.numb = "FOUR"
         self.product.traversal.clear()
         self.product.detection_systems.clear()
-        self.product.traversal.append(FourWheels())
+        self.product.traversal.append(Wheels())
 
     def build_detection_system(self):
         self.product.detection_systems.append(InfraredDetectionSystem())
@@ -118,10 +110,11 @@ class AutonomousCarBuilder(RobotBuilder):
 
 class SpiderRobotBuilder(RobotBuilder):
     def build_traversal(self):
-        self.product.quadripedal = QuadripedalLegs()
+        self.product.legs = Legs()
+        self.product.numb = "SIXTEEEN"
         self.product.traversal.clear()
         self.product.detection_systems.clear()
-        self.product.traversal.append(FourWheels())
+        self.product.traversal.append(Legs())
 
     def build_detection_system(self):
         self.product.detection_systems.append(InfraredDetectionSystem())
@@ -130,9 +123,10 @@ class SpiderRobotBuilder(RobotBuilder):
 class UAVBuilder(RobotBuilder):
     def build_traversal(self):
         self.product.flying = Wings()
+        self.product.numb = "TWO"
         self.product.traversal.clear()
         self.product.detection_systems.clear()
-        self.product.traversal.append(FourWheels())
+        self.product.traversal.append(Wings())
 
     def build_detection_system(self):
         self.product.detection_systems.append(InfraredDetectionSystem())
@@ -148,12 +142,6 @@ class Director:
 
 
 if __name__ == '__main__':
-    # debugging purposes
-    bipedal = BipedalLegs()
-    detection_systems = [InfraredDetectionSystem(), CameraDetectionSystem()]
-    bot = Robot(bipedal=bipedal, detection_systems=detection_systems)
-    print(bot)
-    ###########################################################################
     # director using callbacks
     director = Director()
     builder = AndroidBuilder()
